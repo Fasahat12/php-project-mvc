@@ -21,34 +21,88 @@ class UserController
 
     public function register()
     {
-        try {
-            $user = new User();
-            $user->firstName = $_POST['first_name'];
-            $user->lastName = $_POST['last_name'];
-            $user->email = $_POST['email'];
-            $user->profession = $_POST['profession'];
-            $user->age = $_POST['age'];
-            $user->password = $_POST['password'];
-            $user->address = $_POST['address'];
-            $userId = $user->create();
+        $firstName = trim(htmlspecialchars($_POST['first_name']));
+        $lastName = trim(htmlspecialchars($_POST['last_name']));
+        $email = trim(htmlspecialchars($_POST['email']));
+        $profession = trim(htmlspecialchars($_POST['profession']));
+        $age = trim(htmlspecialchars($_POST['age']));
+        $password = trim(htmlspecialchars($_POST['password']));
+        $address = trim(htmlspecialchars($_POST['address']));
 
-            if (!is_numeric($userId)) {
-                header('Location: ./view/signUpPage.php?error_code=100');
-            } else {
-                $_SESSION['userId'] = $userId;
-                $this->userDashboard();
+        // Validate each field
+        $errors = [];
+
+        if (!$firstName) {
+            $errors["100"] = true;
+        }
+
+        if (!$lastName) {
+            $errors["101"] = true;
+        }
+
+        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors["102"] = true;
+        }
+
+        if (!$profession) {
+            $errors["103"] = true;
+        }
+
+        if (!$age || !is_numeric($age) || $age < 0) {
+            $errors["104"] = true;
+        }
+
+        if (!$password || strlen($password) < 8) {
+            $errors["105"] = true;
+        }
+
+        if (!$address) {
+            $errors["106"] = true;
+        }
+
+        if (!empty($errors)) {
+            $_SESSION['sign-up-errors'] = $errors;
+            $this->signUpPage();
+        } else {
+            try {
+                $user = new User();
+                $user->firstName = $firstName;
+                $user->lastName = $lastName;
+                $user->email = $email;
+                $user->profession = $profession;
+                $user->age = $age;
+                $user->password = $password;
+                $user->address = $address;
+                $userId = $user->create();
+
+                if (!is_numeric($userId)) {
+                    $errors["107"] = true;
+                    $_SESSION['sign-up-errors'] = $errors;
+                    header('Location: ./view/signUpPage.php');
+                } else {
+                    $_SESSION['userId'] = $userId;
+                    $this->userDashboard();
+                }
+            } catch (Exception $e) {
+                $errors["108"] = true;
+                $_SESSION['sign-up-errors'] = $errors;
+                $this->signUpPage();
             }
-        } catch (Exception $e) {
-            header('Location: ./view/signUpPage.php?error_code=101');
         }
     }
 
-    public function loginPage()
+    public function loginPage($errorCode = '')
     {
         if (isset($_SESSION['userId'])) {
             $this->userDashboard();
         } else {
-            header('Location: ./view/loginPage.php');
+            $redirectUrl = 'Location: ./view/loginPage.php';
+
+            if ($errorCode) {
+                $redirectUrl .= "?error_code=$errorCode";
+            }
+
+            header($redirectUrl);
         }
     }
 
@@ -57,7 +111,7 @@ class UserController
         $email = trim($_POST["email"]);
         $password = trim($_POST["password"]);
         $errorCode = '';
-    
+
         if (!$email) {
             $errorCode = "100";
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -66,15 +120,20 @@ class UserController
             $errorCode = "102";
         }
 
-        $user = new User();
-        $result = $user->findUser($_POST['email'], $_POST['password']);
+        if (!$errorCode) {
+            $user = new User();
+            $result = $user->findUser($_POST['email'], $_POST['password']);
 
-        if (isset($result['id'])) {
-            $_SESSION['userId'] = $result['id'];
+            $errorCode = isset($result['id']) ? $errorCode : "103";
 
-            $this->userDashboard();
+            if (!$errorCode) {
+                $_SESSION['userId'] = $result['id'];
+                $this->userDashboard();
+            } else {
+                $this->loginPage($errorCode);
+            }
         } else {
-            $this->loginPage();
+            $this->loginPage($errorCode);
         }
     }
 

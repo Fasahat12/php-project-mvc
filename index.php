@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['route'] == 'login-page') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_GET['route'] == 'login') {
-    $controller->login();
+    echo $controller->login();
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_GET['route'] == 'logout') {
