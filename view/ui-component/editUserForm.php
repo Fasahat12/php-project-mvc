@@ -1,5 +1,7 @@
 <div class="row my-5">
-    <div class="col-6 m-auto">
+    <div class="col-4 m-auto">
+      <div class="card p-3 shadow-lg bg-body rounded border-white">
+       <div class="card-body">
         <h1 class="display-6 text-center">Edit User Details</h1>
         <form id="edit-form" action="index.php?route=update-user-info" method="POST">
             <input type="hidden" name="_method" value="PUT">
@@ -76,10 +78,13 @@
                 </div>
                 <?php endif; ?>
             </div>
-            <button id="submitBtn" type="submit" class="btn btn-primary">Update</button>
+            <div class="d-grid gap-2">
+                <button id="submitBtn" type="submit" class="btn btn-primary">Update</button>
+            </div>
         </form>
-
+      </div>
     </div>
+  </div>
 </div>
 <script>
     $(document).ready(function() {

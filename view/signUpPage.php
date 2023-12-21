@@ -12,7 +12,9 @@ if (isset($_SESSION['sign-up-errors'])) {
 ?>
 
 <div class="row my-5">
-    <div class="col-6 m-auto">
+    <div class="col-4 m-auto">
+      <div class="card p-3 shadow-lg bg-body rounded border-white">
+       <div class="card-body">
         <h1 class="display-6 text-center">Sign Up</h1>
         <form id="sign-up-form" action="index.php?route=register-user" method="POST">
             <div class="mb-3">
@@ -99,10 +101,13 @@ if (isset($_SESSION['sign-up-errors'])) {
                 </div>
                 <?php endif; ?>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="d-grid gap-2">
+               <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
             <div class="mt-2">Already have an account? <a href="index.php?route=login-page" class="text-decoration-none">Sign in</a></div>
         </form>
-
+      </div>
+     </div>
     </div>
 </div>
 <script>

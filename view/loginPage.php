@@ -1,6 +1,8 @@
 <?php require_once "ui-component/header.php"; ?>
 <div class="row my-5">
-    <div class="col-6 m-auto">
+  <div class="col-4 m-auto">
+    <div class="card p-3 shadow-lg bg-body rounded border-white">
+      <div class="card-body">
         <h1 class="display-6 text-center">Login</h1>
         <form action="index.php?route=login" method="POST">
             <?php if ($_GET['error_code'] == "103") : ?>
@@ -32,10 +34,14 @@
                     Please enter a password
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary btn-block">Submit</button>
+            </div>
             <div class="mt-2">Don't have an account? <a href="index.php" class="text-decoration-none">Sign up</a></div>
         </form>
     </div>
+   </div>
+  </div>
 </div>
 <script>
     $(document).ready(function() {
