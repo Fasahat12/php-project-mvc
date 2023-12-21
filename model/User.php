@@ -35,7 +35,7 @@ class User extends DbConnection
 
     public function getAllUsers()
     {
-        $stmt = $this->conn->prepare("SELECT * FROM users");
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE user_type='1'");
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -83,5 +83,18 @@ class User extends DbConnection
         }
 
         return false;
+    }
+
+    public function deleteUser($id)
+    {
+        try {
+            $sql = "DELETE FROM `users` WHERE id = ?";
+            $sql = $this->conn->prepare($sql);
+
+            $sql->execute(array($id));
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
     }
 }

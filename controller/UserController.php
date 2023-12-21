@@ -13,7 +13,8 @@ class UserController
     public function signUpPage()
     {
         if (isset($_SESSION['userId'])) {
-            $_SESSION['user_type'] == 1 ? $this->userDashboard() : $this->adminDashboard();
+            $_SESSION['user_type'] == 1 ? header("Location: index.php?route=dashboard")
+                : header("Location: index.php?route=admin-dashboard");
         } else {
             include './view/signUpPage.php';
         }
@@ -61,7 +62,7 @@ class UserController
 
         if (!empty($errors)) {
             $_SESSION['sign-up-errors'] = $errors;
-            $this->signUpPage();
+            header("Location: index.php");
         } else {
             try {
                 $user = new User();
@@ -77,23 +78,25 @@ class UserController
                 if (!is_numeric($userId)) {
                     $errors["107"] = true;
                     $_SESSION['sign-up-errors'] = $errors;
-                    include './view/signUpPage.php';
+                    header("Location: index.php");
                 } else {
                     $_SESSION['userId'] = $userId;
-                    $this->userDashboard();
+                    $_SESSION['user_type'] = 1;
+                    header("Location: index.php?route=dashboard");
                 }
             } catch (Exception $e) {
                 $errors["108"] = true;
                 $_SESSION['sign-up-errors'] = $errors;
-                $this->signUpPage();
+                header("Location: index.php");
             }
         }
     }
 
-    public function loginPage($errorCode = '')
+    public function loginPage()
     {
         if (isset($_SESSION['userId'])) {
-            $this->userDashboard();
+            $_SESSION['user_type'] == 1 ? header("Location: index.php?route=dashboard")
+                : header("Location: index.php?route=admin-dashboard");
         } else {
             $redirectUrl = './view/loginPage.php';
 
@@ -124,12 +127,13 @@ class UserController
             if (!$errorCode) {
                 $_SESSION['userId'] = $user['id'];
                 $_SESSION['user_type'] = $user['user_type'];
-                $user['user_type'] == 1 ? $this->userDashboard() : $this->adminDashboard();
+                $user['user_type'] == 1 ? header("Location: index.php?route=dashboard")
+                    : header("Location: index.php?route=admin-dashboard");
             } else {
-                $this->loginPage($errorCode);
+                header("Location: index.php?route=login-page&error_code=$errorCode");
             }
         } else {
-            $this->loginPage($errorCode);
+            header("Location: index.php?route=login-page&error_code=$errorCode");
         }
     }
 
@@ -137,13 +141,16 @@ class UserController
     {
         session_unset();
 
-        $this->loginPage();
+        header("Location: index.php?route=login-page");
     }
 
     public function userDashboard()
     {
         if (!$_SESSION['userId']) {
-            $this->loginPage();
+            header("Location: index.php?route=login-page");
+            return;
+        } elseif ($_SESSION['user_type'] == 2) {
+            header("Location: index.php?route=admin-dashboard");
             return;
         }
 
@@ -157,7 +164,10 @@ class UserController
     public function adminDashboard()
     {
         if (!$_SESSION['userId']) {
-            $this->loginPage();
+            header("Location: index.php?route=login-page");
+            return;
+        } elseif ($_SESSION['user_type'] == 1) {
+            header("Location: index.php?route=dashboard");
             return;
         }
 
@@ -168,6 +178,23 @@ class UserController
         $users = $user->getAllUsers();
 
         include './view/adminDashboard.php';
+    }
+
+    public function adminEditUserPage()
+    {
+        if (!$_SESSION['userId']) {
+            header("Location: index.php?route=login-page");
+            return;
+        } elseif ($_SESSION['user_type'] == 1) {
+            header("Location: index.php?route=dashboard");
+            return;
+        }
+
+        $user = new User();
+        $result = $user->getUser($_GET['id']);
+        $_SESSION['result'] = $result;
+
+        include './view/dashboard.php';
     }
 
     public function updateUserInfo()
@@ -208,7 +235,7 @@ class UserController
 
         if (!empty($errors)) {
             $_SESSION['update-user-errors'] = $errors;
-            $this->userDashboard();
+            header("Location: index.php?route=dashboard");
         } else {
             $user = new User();
             $user->id = $_POST['id'];
@@ -223,12 +250,38 @@ class UserController
 
             if ($result) {
                 $_SESSION['update-success-message'] = "User Details Successfully updated.";
-                $this->userDashboard();
+                $_SESSION['user_type'] == 1 ? header("Location: index.php?route=dashboard")
+                    : header("Location: index.php?route=admin-dashboard");
             } else {
                 $errors["107"] = true;
                 $_SESSION['update-user-errors'] = $errors;
-                $this->userDashboard();
+                header("Location: index.php?route=dashboard");
             }
+        }
+    }
+
+    public function deleteUser()
+    {
+        try {
+            $user = new User();
+
+            if ($user->deleteUser($_GET['id'])) {
+                echo json_encode([
+                    'status' => 200,
+                    'message' => 'User Deleted Successfully!'
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 500,
+                    'message' => 'Something went wrong'
+                ]);
+            }
+        } catch (Exception $error) {
+
+            echo json_encode([
+                'status' => 500,
+                'message' => 'Message: ' . $error->getMessage()
+            ]);
         }
     }
 }

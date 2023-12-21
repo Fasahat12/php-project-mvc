@@ -1,6 +1,6 @@
 <nav class="navbar navbar-dark <?=(!($_SESSION['admin']) ? "bg-primary" : "bg-dark")?>">
   <div class="container">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="index.php">
         <?=(isset($_SESSION['admin']) ? 'Admin Dashboard' : 'User Dashboard')?>
     </a>
     <div id="navbarNav">

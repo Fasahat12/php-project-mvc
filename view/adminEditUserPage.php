@@ -13,16 +13,3 @@ if (isset($_SESSION['update-user-errors'])) {
 
 require_once "ui-component/editUserForm.php";
 require_once "ui-component/footer.php";
-
-?>
-
-<?php if (isset($_SESSION['update-success-message'])) : ?>
-    <script>
-        Swal.fire({
-            title: "User Updated",
-            text: "User information has been updated successfully.",
-            icon: "success"
-        });
-    </script>
-    <?php unset($_SESSION['update-success-message']); ?>
-<?php endif; ?>

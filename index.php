@@ -4,7 +4,6 @@ require_once "controller/UserController.php";
 
 $controller = new UserController();
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && !$_GET['route']) {
     $controller->signUpPage();
 }
@@ -30,6 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['route'] == 'admin-dashboard') 
 }
 
 if (
+    $_SERVER['REQUEST_METHOD'] == 'GET'
+    && $_GET['route'] == 'edit-user-page'
+    && isset($_GET['id'])
+) {
+    $controller->adminEditUserPage();
+}
+
+if (
     $_SERVER['REQUEST_METHOD'] == 'POST'
     && $_GET['route'] == 'update-user-info'
     && isset($_POST['_method'])
@@ -40,4 +47,11 @@ if (
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_GET['route'] == 'register-user') {
     $controller->register();
+}
+
+if (
+    $_SERVER['REQUEST_METHOD'] == 'DELETE'
+    && $_GET['route'] == 'delete-user'
+) {
+    $controller->deleteUser();
 }
