@@ -33,6 +33,14 @@ class User extends DbConnection
         }
     }
 
+    public function getAllUsers()
+    {
+        $stmt = $this->conn->prepare("SELECT * FROM users");
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getUser($id)
     {
         $stmt = $this->conn->prepare("SELECT * FROM users WHERE id='$id'");

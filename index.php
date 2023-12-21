@@ -25,6 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['route'] == 'dashboard') {
     $controller->userDashboard();
 }
 
+if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['route'] == 'admin-dashboard') {
+    $controller->adminDashboard();
+}
+
 if (
     $_SERVER['REQUEST_METHOD'] == 'POST'
     && $_GET['route'] == 'update-user-info'

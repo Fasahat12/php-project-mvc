@@ -13,9 +13,9 @@ class UserController
     public function signUpPage()
     {
         if (isset($_SESSION['userId'])) {
-            $this->userDashboard();
+            $_SESSION['user_type'] == 1 ? $this->userDashboard() : $this->adminDashboard();
         } else {
-            header('Location: ./view/signUpPage.php');
+            include './view/signUpPage.php';
         }
     }
 
@@ -29,7 +29,6 @@ class UserController
         $password = trim(htmlspecialchars($_POST['password']));
         $address = trim(htmlspecialchars($_POST['address']));
 
-        // Validate each field
         $errors = [];
 
         if (!$firstName) {
@@ -48,7 +47,7 @@ class UserController
             $errors["103"] = true;
         }
 
-        if (!$age || !is_numeric($age) || $age < 0) {
+        if (!$age || !is_numeric($age) || $age <= 0) {
             $errors["104"] = true;
         }
 
@@ -78,7 +77,7 @@ class UserController
                 if (!is_numeric($userId)) {
                     $errors["107"] = true;
                     $_SESSION['sign-up-errors'] = $errors;
-                    header('Location: ./view/signUpPage.php');
+                    include './view/signUpPage.php';
                 } else {
                     $_SESSION['userId'] = $userId;
                     $this->userDashboard();
@@ -96,13 +95,9 @@ class UserController
         if (isset($_SESSION['userId'])) {
             $this->userDashboard();
         } else {
-            $redirectUrl = 'Location: ./view/loginPage.php';
+            $redirectUrl = './view/loginPage.php';
 
-            if ($errorCode) {
-                $redirectUrl .= "?error_code=$errorCode";
-            }
-
-            header($redirectUrl);
+            include $redirectUrl;
         }
     }
 
@@ -122,13 +117,14 @@ class UserController
 
         if (!$errorCode) {
             $user = new User();
-            $result = $user->findUser($_POST['email'], $_POST['password']);
+            $user = $user->findUser($_POST['email'], $_POST['password']);
 
-            $errorCode = isset($result['id']) ? $errorCode : "103";
+            $errorCode = isset($user['id']) ? $errorCode : "103";
 
             if (!$errorCode) {
-                $_SESSION['userId'] = $result['id'];
-                $this->userDashboard();
+                $_SESSION['userId'] = $user['id'];
+                $_SESSION['user_type'] = $user['user_type'];
+                $user['user_type'] == 1 ? $this->userDashboard() : $this->adminDashboard();
             } else {
                 $this->loginPage($errorCode);
             }
@@ -148,32 +144,91 @@ class UserController
     {
         if (!$_SESSION['userId']) {
             $this->loginPage();
+            return;
         }
 
         $user = new User();
         $result = $user->getUser($_SESSION['userId']);
         $_SESSION['result'] = $result;
 
-        header('Location: ./view/dashboard.php');
+        include './view/dashboard.php';
+    }
+
+    public function adminDashboard()
+    {
+        if (!$_SESSION['userId']) {
+            $this->loginPage();
+            return;
+        }
+
+        $user = new User();
+        $result = $user->getUser($_SESSION['userId']);
+        $_SESSION['result'] = $result;
+        $_SESSION['admin'] = true;
+        $users = $user->getAllUsers();
+
+        include './view/adminDashboard.php';
     }
 
     public function updateUserInfo()
     {
-        $user = new User();
-        $user->id = $_POST['id'];
-        $user->firstName = $_POST['first_name'];
-        $user->lastName = $_POST['last_name'];
-        $user->email = $_POST['email'];
-        $user->profession = $_POST['profession'];
-        $user->age = $_POST['age'];
-        $user->address = $_POST['address'];
+        $firstName = trim(htmlspecialchars($_POST['first_name']));
+        $lastName = trim(htmlspecialchars($_POST['last_name']));
+        $email = trim(htmlspecialchars($_POST['email']));
+        $profession = trim(htmlspecialchars($_POST['profession']));
+        $age = trim(htmlspecialchars($_POST['age']));
+        $address = trim(htmlspecialchars($_POST['address']));
 
-        $result = $user->updateUser();
+        $errors = [];
 
-        if ($result) {
+
+        if (!$firstName) {
+            $errors["100"] = true;
+        }
+
+        if (!$lastName) {
+            $errors["101"] = true;
+        }
+
+        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors["102"] = true;
+        }
+
+        if (!$profession) {
+            $errors["103"] = true;
+        }
+
+        if (!$age || !is_numeric($age) || $age <= 0) {
+            $errors["104"] = true;
+        }
+
+        if (!$address) {
+            $errors["106"] = true;
+        }
+
+        if (!empty($errors)) {
+            $_SESSION['update-user-errors'] = $errors;
             $this->userDashboard();
         } else {
-            header('Location: ./view/dashboard.php?error_message=something-went-wrong');
+            $user = new User();
+            $user->id = $_POST['id'];
+            $user->firstName = $firstName;
+            $user->lastName = $lastName;
+            $user->email = $email;
+            $user->profession = $profession;
+            $user->age = $age;
+            $user->address = $address;
+
+            $result = $user->updateUser();
+
+            if ($result) {
+                $_SESSION['update-success-message'] = "User Details Successfully updated.";
+                $this->userDashboard();
+            } else {
+                $errors["107"] = true;
+                $_SESSION['update-user-errors'] = $errors;
+                $this->userDashboard();
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ if (isset($_SESSION['sign-up-errors'])) {
 <div class="row my-5">
     <div class="col-6 m-auto">
         <h1 class="display-6 text-center">Sign Up</h1>
-        <form action="../index.php?route=register-user" method="POST">
+        <form id="sign-up-form" action="index.php?route=register-user" method="POST">
             <div class="mb-3">
                 <label for="first_name" class="form-label">First Name</label>
                 <input name="first_name" type="text" placeholder="Enter first name..." class="form-control <?=(isset($errors['100']) ? "is-invalid" : "")?>" id="first_name">
@@ -76,14 +76,14 @@ if (isset($_SESSION['sign-up-errors'])) {
                 <?php endif; ?>
             </div>
             <div class="mb-3">
-                <label for="address" class="form-label  <?=(isset($errors['106']) ? "is-invalid" : "")?>">Address</label>
+                <label for="address" class="form-label">Address</label>
                 <input name="address" type="text" placeholder="Enter address..." class="form-control <?=(isset($errors['106']) ? "is-invalid" : "")?>" id="address">
                 <div id="addressInvalid1" class="invalid-feedback d-none">
                     Please enter a valid address
                 </div>
-                <?php if (isset($errors['103'])) : ?>
-                <div id="professionInvalid2" class="invalid-feedback">
-                    Please enter a valid profession
+                <?php if (isset($errors['106'])) : ?>
+                <div id="addressInvalid2" class="invalid-feedback">
+                    Please enter a valid address
                 </div>
                 <?php endif; ?>
             </div>
@@ -100,14 +100,14 @@ if (isset($_SESSION['sign-up-errors'])) {
                 <?php endif; ?>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
-            <div class="mt-2">Already have an account? <a href="../index.php?route=login-page" class="text-decoration-none">Sign in</a></div>
+            <div class="mt-2">Already have an account? <a href="index.php?route=login-page" class="text-decoration-none">Sign in</a></div>
         </form>
 
     </div>
 </div>
 <script>
     $(document).ready(function() {
-        $("form").submit(function(event) {
+        $("#sign-up-form").submit(function(event) {
             let firstName = $("#first_name").val().trim();
             let lastName = $("#last_name").val().trim();
             let email = $("#email").val().trim();
@@ -137,7 +137,7 @@ if (isset($_SESSION['sign-up-errors'])) {
                 displayError("#last_name", "#lastNameInvalid1");
             }
 
-            if (age.length == 0) {
+            if (age.length == 0 || age <= 0) {
                 errorCount++;
                 displayError("#age", "#ageInvalid1");
             }
