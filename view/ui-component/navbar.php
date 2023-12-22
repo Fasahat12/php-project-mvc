@@ -1,8 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-dark <?=(!($_SESSION['admin']) ? "bg-primary" : "bg-dark")?>">
+<nav class="navbar navbar-expand-lg navbar-dark <?= (!($_SESSION['admin']) ? "bg-primary" : "bg-dark") ?>">
   <div class="container">
     <a class="navbar-brand" href="index.php">
       <?php if ($_SESSION['userId']) : ?>
-        <?=(isset($_SESSION['admin']) ? 'Admin Dashboard' : 'User Dashboard')?>
+        <?= (isset($_SESSION['admin']) ? 'Admin Dashboard' : 'User Dashboard') ?>
       <?php else : ?>
         Mini-MVC
       <?php endif; ?>
@@ -13,11 +13,11 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <?php if ($_SESSION['userId']) : ?>
-        <li class="nav-item">
+          <li class="nav-item">
             <form action="index.php?route=logout" method="post">
-                <button type="submit" class="btn btn-link navbar-btn navbar-link text-light text-decoration-none">Logout</button>
+              <button type="submit" class="btn btn-link navbar-btn navbar-link text-light text-decoration-none">Logout</button>
             </form>
-        </li>
+          </li>
         <?php else : ?>
           <li class="nav-item">
             <a class="nav-link" aria-current="page" href="index.php?route=login-page">Login</a>

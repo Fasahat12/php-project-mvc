@@ -4,12 +4,10 @@ require_once "./model/User.php";
 
 session_start();
 
+define("FROM_CONTROLLER", true);
+
 class UserController
 {
-    public function __construct()
-    {
-    }
-
     public function signUpPage()
     {
         if (isset($_SESSION['userId'])) {

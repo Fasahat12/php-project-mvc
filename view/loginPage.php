@@ -9,7 +9,7 @@ require_once "ui-component/navbar.php";
     <div class="card p-3 shadow-lg bg-body rounded border-white mb-5">
       <div class="card-body">
         <h1 class="display-6 text-center">Login</h1>
-        <form action="index.php?route=login" method="POST">
+        <form id="login-form" action="index.php?route=login" method="POST">
             <?php if ($_GET['error_code'] == "103") : ?>
                 <div class="alert alert-warning" role="alert">
                     Invalid Credentials
@@ -48,27 +48,5 @@ require_once "ui-component/navbar.php";
    </div>
   </div>
 </div>
-<script>
-    $(document).ready(function() {
-        $("form").submit(function(event) {
-            let email = $("#email").val();
-            let password = $("#password").val();
-
-            if (!isEmail(email)) {
-                event.preventDefault();
-                displayError("#email", "#emailInvalid2");
-            }
-
-            if (password.length === 0) {
-                event.preventDefault();
-                displayError("#password", "#passwordInvalid2");
-            }
-        });
-
-        $('input').on('input', function(event) {
-            $(this).removeClass("is-invalid");
-            $(this).siblings('.invalid-feedback').addClass("d-none");
-        });
-    });
-</script>
+<script src="view/js/login.js"></script>
 <?php require_once "ui-component/footer.php"; ?>
