@@ -1,6 +1,7 @@
 <?php
 
 require_once "ui-component/header.php";
+require_once "ui-component/navbar.php";
 
 session_start();
 
@@ -12,8 +13,8 @@ if (isset($_SESSION['sign-up-errors'])) {
 ?>
 
 <div class="row my-5">
-    <div class="col-4 m-auto">
-      <div class="card p-3 shadow-lg bg-body rounded border-white">
+    <div class="col-10 col-md-5 col-lg-4 col-xl-4 m-auto">
+      <div class="card p-3 shadow-lg bg-body rounded border-white mb-5">
        <div class="card-body">
         <h1 class="display-6 text-center">Sign Up</h1>
         <form id="sign-up-form" action="index.php?route=register-user" method="POST">

@@ -173,11 +173,35 @@ class UserController
 
         $user = new User();
         $result = $user->getUser($_SESSION['userId']);
+
         $_SESSION['result'] = $result;
         $_SESSION['admin'] = true;
-        $users = $user->getAllUsers();
+
+        $users = $user->getAllUsers(1, 5);
+        $totalPages = $user->getTotalPages(5);
 
         include './view/adminDashboard.php';
+    }
+
+    public function getUsers()
+    {
+        $page = $_GET['page'];
+        $user = new User();
+        $users = $user->getAllUsers($page, 5);
+        $totalPages = $user->getTotalPages(5);
+
+        if ($users) {
+            echo json_encode([
+                'status' => '200',
+                'data' => $users,
+                'pages' => $totalPages,
+                'current_page' => $page
+            ]);
+        } else {
+            echo json_encode([
+                'status' => '500'
+            ]);
+        }
     }
 
     public function adminEditUserPage()
@@ -266,9 +290,14 @@ class UserController
             $user = new User();
 
             if ($user->deleteUser($_GET['id'])) {
+                $totalPages = $user->getTotalPages(5);
+                $totalUsers = $user->getTotalUsers();
+
                 echo json_encode([
                     'status' => 200,
-                    'message' => 'User Deleted Successfully!'
+                    'message' => 'User Deleted Successfully!',
+                    'pages' =>  $totalPages,
+                    'total_user_count' => $totalUsers
                 ]);
             } else {
                 echo json_encode([

@@ -1,6 +1,6 @@
 <div class="row my-5">
-    <div class="col-4 m-auto">
-      <div class="card p-3 shadow-lg bg-body rounded border-white">
+    <div class="col-10 col-md-5 col-lg-4 col-xl-4 m-auto">
+      <div class="card p-3 shadow-lg bg-body rounded border-white mb-5">
        <div class="card-body">
         <h1 class="display-6 text-center">Edit User Details</h1>
         <form id="edit-form" action="index.php?route=update-user-info" method="POST">

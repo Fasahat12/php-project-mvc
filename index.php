@@ -55,3 +55,11 @@ if (
 ) {
     $controller->deleteUser();
 }
+
+if (
+    $_SERVER['REQUEST_METHOD'] == 'GET'
+    && $_GET['route'] == 'get-users'
+    && isset($_GET['page'])
+) {
+    $controller->getUsers();
+}

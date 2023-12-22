@@ -33,12 +33,30 @@ class User extends DbConnection
         }
     }
 
-    public function getAllUsers()
+    public function getAllUsers($page, $itemsPerPage)
     {
-        $stmt = $this->conn->prepare("SELECT * FROM users WHERE user_type='1'");
+        $start = ($page - 1) * $itemsPerPage;
+
+        $stmt = $this->conn->prepare("SELECT id, email, first_name, last_name
+         FROM users WHERE user_type='1' LIMIT $start, $itemsPerPage");
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTotalPages($itemsPerPage)
+    {
+        $totalRecords = $this->getTotalUsers();
+
+        return ceil($totalRecords / $itemsPerPage);
+    }
+
+
+    public function getTotalUsers()
+    {
+        $stmt = $this->conn->prepare("SELECT COUNT(*) FROM users WHERE user_type='1'");
+        $stmt->execute();
+        return $stmt->fetchColumn();
     }
 
     public function getUser($id)

@@ -7,7 +7,7 @@ require_once "ui-component/navbar.php";
 
 ?>
 <div class="row my-5">
-    <div class="col-8 m-auto">
+    <div id='manage-users' class="col-8 m-auto">
         <table class="table">
         <thead class="table-dark">
             <th>Id</th>
@@ -34,12 +34,26 @@ require_once "ui-component/navbar.php";
             <?php endforeach; ?>
         </tbody>
         </table>
+        <?php if ($totalPages > 1) : ?>
+        <nav aria-label="...">
+            <ul class="pagination">
+                <?php for($i = 1; $i <= $totalPages; $i++) : ?>
+                <li class="page-item text-dark page-no">
+                    <a class="page-link" href="#"><?=$i?></a>
+                </li>
+                <?php endfor; ?>
+            </ul>
+        </nav>
+        <?php endif; ?>
     </div>
 </div>
 <script>
+    const itemsPerPage = 5;
+    var currentPage = 1;
+
     $(document).ready(function() {
 
-        $('form[id^="delete-form-"]').on('submit', function(event) {
+        $('.table').on('submit', 'form[id^="delete-form-"]', function(event) {
             event.preventDefault();
             let userId = $(this).children("input[name=id]").val();
 
@@ -53,7 +67,6 @@ require_once "ui-component/navbar.php";
                 confirmButtonText: "Yes, delete it!"
                 }).then((result) => {
                 if (result.isConfirmed) {
-
                     $.ajax({
                         url: "index.php?route=delete-user&id="+userId,
                         type: 'DELETE',
@@ -68,6 +81,19 @@ require_once "ui-component/navbar.php";
                                 });
 
                                 $(`#row-${userId}`).remove();
+
+                                $('.pagination').empty();
+                                
+                                for (let i = 0; i < response.pages; i++) {
+                                    $('.pagination').append(`
+                                        <li class="page-item text-dark page-no">
+                                            <a class="page-link" href="#">${i+1}</a>
+                                        </li>
+                                    `);
+                                }
+
+                                moveToPage(currentPage);
+
                             } else {
                                 Swal.fire({
                                 icon: "error",
@@ -87,6 +113,12 @@ require_once "ui-component/navbar.php";
                 }
             });
             
+        });
+
+        $('#manage-users').on('click', '.page-no',  function(event){
+            let page = $(this).text();
+            currentPage = page;
+            moveToPage(page);
         });
     });
 </script>
