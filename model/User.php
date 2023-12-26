@@ -54,6 +54,25 @@ class User extends DbConnection
         return $stmt->fetchColumn();
     }
 
+    public function getUsersViaPage($page)
+    {
+        $users = $this->getAllUsers($page, 5);
+        $totalPages = $this->getTotalPages(5);
+
+        if ($users) {
+            return [
+                'status' => '200',
+                'data' => $users,
+                'pages' => $totalPages,
+                'current_page' => $page
+            ];
+        } else {
+            return [
+                'status' => '500'
+            ];
+        }
+    }
+
     public function getUser($id)
     {
         $stmt = $this->conn->prepare("SELECT * FROM users WHERE id='$id'");

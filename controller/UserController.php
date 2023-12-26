@@ -160,7 +160,7 @@ class UserController
         include './view/dashboard.php';
     }
 
-    public function adminDashboard()
+    public function adminDashboard2()
     {
         if (!$_SESSION['userId']) {
             header("Location: index.php?route=login-page");
@@ -181,6 +181,30 @@ class UserController
 
         include './view/adminDashboard.php';
     }
+
+    public function adminDashboard()
+    {
+        if (!$_SESSION['userId']) {
+            header("Location: index.php?route=login-page");
+            return;
+        } elseif ($_SESSION['user_type'] == 1) {
+            header("Location: index.php?route=dashboard");
+            return;
+        }
+
+        $user = new User();
+        $result = $user->getUser($_SESSION['userId']);
+        $page = isset($_GET['page']) && intval($_GET['page']) ? $_GET['page'] : "1";
+
+        $_SESSION['result'] = $result;
+        $_SESSION['admin'] = true;
+
+        $users = $user->getAllUsers($page, 5);
+        $totalPages = $user->getTotalPages(5);
+
+        include './view/adminDashboard.php';
+    }
+
 
     public function getUsers()
     {
@@ -325,7 +349,7 @@ class UserController
 
         $userAddress = new Address();
         $userAddress = $userAddress->get($_SESSION['userId']);
-        $address = NULL;
+        $address = [];
 
         if ($userAddress) {
             $address = $userAddress;

@@ -37,19 +37,17 @@ require_once "ui-component/navbar.php";
         <?php if ($totalPages > 1) : ?>
             <nav aria-label="...">
                 <ul class="pagination">
-                    <li class="page-item <?= $page == 1 ? 'disabled' : '' ?>"><a class="page-link previous text-dark" href="index.php?route=admin-dashboard&page=<?= $page - 1 ?>">Previous</a></li>
                     <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
                         <li class="page-item text-dark page-no">
-                            <a class="page-link" href="index.php?route=admin-dashboard&page=<?= $i ?>"><?= $i ?></a>
+                            <a class="page-link" href="#"><?= $i ?></a>
                         </li>
                     <?php endfor; ?>
-                    <li class="page-item <?= $page == $totalPages ? 'disabled' : '' ?>"><a class="page-link next text-dark" href="index.php?route=admin-dashboard&page=<?= $page + 1 ?>">Next</a></li>
                 </ul>
             </nav>
         <?php endif; ?>
     </div>
 </div>
-<script src="view/js/adminDashboard.js" currentPage="<?= $page ?>" totalPages="<?= $totalPages ?>"></script>
+<script src="view/js/adminDashboard2.js"></script>
 <?php require_once "ui-component/footer.php"; ?>
 <?php if (isset($_SESSION['update-success-message'])) : ?>
     <script>
