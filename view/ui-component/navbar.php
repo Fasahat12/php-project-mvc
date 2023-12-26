@@ -13,6 +13,9 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <?php if ($_SESSION['userId']) : ?>
+          <?php if (!($_SESSION['admin'])) : ?>
+            <a class="nav-link text-light" aria-current="page" href="index.php?route=manage-address">Manage Delivery Address</a>
+          <?php endif; ?>
           <li class="nav-item">
             <form action="index.php?route=logout" method="post">
               <button type="submit" class="btn btn-link navbar-btn navbar-link text-light text-decoration-none">Logout</button>

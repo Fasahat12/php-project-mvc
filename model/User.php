@@ -13,11 +13,6 @@ class User extends DbConnection
     public $email;
     public $address;
 
-    public function __construct()
-    {
-        $this->connect();
-    }
-
     public function create()
     {
         try {

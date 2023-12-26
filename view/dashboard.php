@@ -26,3 +26,13 @@ require_once "ui-component/footer.php";
     </script>
     <?php unset($_SESSION['update-success-message']); ?>
 <?php endif; ?>
+<?php if (isset($_SESSION['address-success-message'])) : ?>
+    <script>
+        Swal.fire({
+            title: "Address Saved",
+            text: "<?= $_SESSION['address-success-message'] ?>",
+            icon: "success"
+        });
+    </script>
+    <?php unset($_SESSION['address-success-message']); ?>
+<?php endif; ?>

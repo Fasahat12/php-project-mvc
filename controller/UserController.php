@@ -1,6 +1,7 @@
 <?php
 
 require_once "./model/User.php";
+require_once "./model/Address.php";
 
 session_start();
 
@@ -309,6 +310,100 @@ class UserController
                 'status' => 500,
                 'message' => 'Message: ' . $error->getMessage()
             ]);
+        }
+    }
+
+    public function manageAddressPage()
+    {
+        if (!$_SESSION['userId']) {
+            header("Location: index.php?route=login-page");
+            return;
+        } elseif ($_SESSION['user_type'] == 2) {
+            header("Location: index.php?route=admin-dashboard");
+            return;
+        }
+
+        $userAddress = new Address();
+        $userAddress = $userAddress->get($_SESSION['userId']);
+        $address = NULL;
+
+        if ($userAddress) {
+            $address = $userAddress;
+        }
+
+        include './view/manageAddressPage.php';
+    }
+
+    public function validateAddress()
+    {
+        $city = trim(htmlspecialchars($_POST['city']));
+        $zipCode = trim(htmlspecialchars($_POST['zip_code']));
+        $address = trim(htmlspecialchars($_POST['address']));
+
+        $errors = [];
+
+        if (!$city) {
+            $errors["100"] = true;
+        }
+
+        if (!$zipCode) {
+            $errors["101"] = true;
+        }
+
+        if (!$address) {
+            $errors["102"] = true;
+        }
+
+        if (!empty($errors)) {
+            $_SESSION['address-errors'] = $errors;
+            header("Location: index.php?route=manage-address");
+
+            return [
+                'result' => false
+            ];
+        } else {
+            return [
+                'result' => true,
+                'city' => $city,
+                'zip_code' => $zipCode,
+                'address' => $address
+            ];
+        }
+    }
+
+    public function createUserAddress()
+    {
+        $isValidated = $this->validateAddress();
+
+        if ($isValidated['result']) {
+            $address = new Address();
+            $address->userId = $_SESSION['userId'];
+            $address->city = $isValidated['city'];
+            $address->zipCode = $isValidated['zip_code'];
+            $address->address = $isValidated['address'];
+            $address->create();
+
+            $_SESSION['address-success-message'] = 'Address Added Successfully.';
+
+            header("Location: index.php?route=dashboard");
+        }
+    }
+
+    public function updateUserAddress()
+    {
+        $isValidated = $this->validateAddress();
+
+        if ($isValidated['result']) {
+            $address = new Address();
+            $address->id = $_POST['id'];
+            $address->city = $isValidated['city'];
+            $address->zipCode = $isValidated['zip_code'];
+            $address->address = $isValidated['address'];
+            $address->update();
+
+            $_SESSION['address-success-message'] = 'Address Updated Successfully.';
+
+            header("Location: index.php?route=dashboard");
         }
     }
 }
